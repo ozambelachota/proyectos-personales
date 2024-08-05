@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Bus {
+  idbus Int @id @default(autoincrement())
+  placa String 
+  marca String 
+  modelo String 
+  asientos Int 
+  asiento Asiento[] 
+  itineraio Itinerario[]
+}
+model Asiento {
+  idasiento Int @id @default(autoincrement())
+  correlativo String
+  bus Bus @relation(fields: [idBus], references: [idbus])
+  idBus Int
+  detalles DetalleItinerario[]
+}
+model Chofer {
+  idchofer Int @id @default(autoincrement())
+  dni String @db.VarChar(8)
+  nombres String 
+  fingreso DateTime 
+  itinerarios Itinerario[]
+}
+model Itinerario {
+  iditinerario Int @id @default(autoincrement())
+  bus Bus @relation(fields: [idBus], references: [idbus])
+  idBus Int
+  chofer Chofer @relation(fields: [idChofer],references: [idchofer])
+  idChofer Int
+  fechaViaje DateTime 
+  detalles DetalleItinerario[]
+}
+model DetalleItinerario{
+  iddetalle Int @id @default(autoincrement())
+  itinerario Itinerario @relation(fields: [idItinerario],references: [iditinerario]) 
+  idItinerario Int
+  asiento Asiento @relation(fields: [idAsiento],references: [idasiento])
+  idAsiento Int
+  dni String @db.VarChar(8)
+  nombres String
+  ocupado Boolean
+}
+model Usuario {
+  idusuario Int @id @default(autoincrement())
+  dni String @db.VarChar(8)
+  nombre String
+  username String
+  password String 
+  rol String 
+}

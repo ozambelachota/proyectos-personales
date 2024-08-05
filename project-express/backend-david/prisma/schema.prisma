@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Bus {
+  id Int @id @default(autoincrement())
+  placa String @unique
+  marca String 
+  modelo String 
+  asientos Int 
+  asiento Asiento[] 
+  itineraio Itinerario[]
+}
+model Asiento {
+  id Int @id @default(autoincrement())
+  correlativo String
+  bus Bus @relation(fields: [idbus], references: [id])
+  idbus Int
+  detalles DetalleItinerario[]
+}
+model Chofer {
+  id Int @id @default(autoincrement())
+  dni String @unique @db.VarChar(8)
+  nombres String 
+  fingreso DateTime 
+  itinerarios Itinerario[]
+}
+model Itinerario {
+  id Int @id @default(autoincrement())
+  bus Bus @relation(fields: [idbus], references: [id])
+  idbus Int
+  chofer Chofer @relation(fields: [idchofer],references: [id])
+  idchofer Int
+  fechaViaje DateTime 
+  detalles DetalleItinerario[]
+}
+model DetalleItinerario{
+  id Int @id @default(autoincrement())
+  itinerario Itinerario @relation(fields: [idItinerario],references: [id]) 
+  idItinerario Int
+  asiento Asiento @relation(fields: [idAsiento],references: [id])
+  idAsiento Int
+  dni String @db.VarChar(8)
+  nombres String
+  ocupado Boolean
+}
+model Usuario {
+  id Int @id @default(autoincrement())
+  dni String @db.VarChar(8)
+  nombre String
+  username String
+  password String 
+  rol Rol @relation(fields: [idrol],references: [id])
+  idrol Int
+}
+model Rol{
+  id Int @id @default(autoincrement())
+  nombre_rol String
+  usuarios Usuario[]
+}
